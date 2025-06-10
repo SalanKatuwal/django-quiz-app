@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Result Page
+{% endblock title %}
+
+{% block style %}
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .result-card {
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .score-text {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .score-highlight {
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        
+        .view-btn {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .view-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+        }
+        
+        .result-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #0d6efd;
+        }
+{% endblock style %}
+
+{% block body_style %}
+    background-color: #f0f7ff;
+{% endblock body_style %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="result-card">
+                    <div class="result-icon">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div> 
+                    <h2 class="mb-4">Quiz Results</h2>
+                    {% if request.session.score == 8 %}
+                        <div class="alert alert-success">Excellent! Keep it up!</div>
+                    {% endif %} 
+                    <p class="score-text">
+                        You got <span class="score-highlight">{{request.session.score}}</span> answers correct out of <span class="score-highlight">{{request.session.total_pages}}</span> questions
+                        </p>
+                    <a href="{% url 'answer' %}" class="btn btn-primary btn-lg view-btn">
+                        View your answers
+                    </a>    
+                    <br>
+                    <br>
+                    <a href="{% url 'remove_result' %}" class="btn btn-info btn-lg view-btn">
+                        Play quiz again
+                    </a>
+                    &nbsp    
+                    &nbsp    
+                    <a href="{% url 'logout' %}" class="btn btn-danger btn-lg view-btn">
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
+

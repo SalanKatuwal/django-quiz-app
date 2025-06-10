@@ -1,0 +1,88 @@
+{% extends "base.html" %} 
+
+{% block title %} 
+Home Page
+{% endblock title %}
+
+{% block body_class %} 
+d-flex justify-content-center align-items-center" style="min-height: 100vh; 
+{% if category == 'History' %}
+background-image: url(/static/img/history.jpg); background-size: cover;
+{% elif category == 'Geography' %}
+background-image: url(/static/img/geography.webp); background-size: cover;
+{% elif category == 'Science' %}
+background-image: url(/static/img/science.jpg); background-size: cover;
+{% else %}
+background-image: url(/static/img/sports.jpg); background-size: cover;
+{% endif %}
+
+{% endblock body_class %}  
+
+{% block body %}
+<div class="container">
+    {% for quiz in quizgame %}
+    <div class="col-md-6 offset-md-3 mb-4">
+      <!-- Quiz Card --> 
+      <div class="card shadow">
+        <!-- Question Section -->
+        <div class="card-header">
+          <h5 class="card-title mb-2">
+          {% if category == 'History' %}
+          ⚔️ 
+          {% elif category == 'Geography' %}
+          🌍 
+          {% elif category == 'Science' %}
+          🧠
+          {% elif category == 'Sports' %}
+          🏅
+          {% endif %}
+          {{category}}
+          &nbsp;
+          &nbsp;
+          &nbsp;
+          {% if difficulty == 'easy' %}
+          🟢 Easy
+          {% elif difficulty == 'medium' %}
+          🟡 Medium
+          {% else %}
+          🔴 Hard
+          {% endif %}
+          </h5>
+          <h5 class="card-subtitle mb-2 text-muted">Question No: {{current_page}}</h5>
+
+        </div>
+        <h5 class="card-title mb-0 text-center">{{ quiz.question }}</h5>
+        <!-- Options Section -->
+        <form method="POST" action="{% url 'checkans' quiz.id %}?page={{ current_page }}">
+        {% csrf_token %}
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            {% for option in options %}
+            <button type="submit" name="selected_options" class="btn {% if request.session.selected_option %} disabled {% endif %} {% if request.session.selected_option == option %} {% if request.session.answer == 'incorrect' %} btn-danger {% elif request.session.answer == 'correct' %} btn-success {% endif %} {% else %} btn-primary {% endif %} mb-2" value="{{ option }}">{{ option }}</button>
+            {% endfor %}
+        </div>
+        <div class="text-center">
+        <button type="submit" name="selected_options" value="Next" class="btn btn-primary {% if request.session.selected_option is None %} disabled {% endif %}">Next</button>
+        </div>
+        <br>
+        <div class="progress" role="progressbar" aria-label="Info example"
+     aria-valuenow="5" aria-valuemin="0" aria-valuemax="10">
+  <div class="progress-bar bg-primary" style="width: {{value}}%"></div>
+</div>
+        </div>
+    </form>
+      </div>
+      <br>
+
+      <div class="text-center">
+        <a href="{% url 'quit' %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to quit the quiz?')">Quit the Game</a>
+      </div>
+
+    </div>
+    {% endfor %} 
+
+  </div>
+
+
+{% endblock body %}
+

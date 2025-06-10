@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Welcome to your Quiz App
+{% endblock title %}
+
+{% block style %}
+ .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 0;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .category-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+        }
+        
+        .category-badge:hover {
+            transform: scale(1.05);
+        }
+        
+        .difficulty-level {
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin: 5px;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .difficulty-easy {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .difficulty-medium {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffeaa7;
+        }
+        
+        .difficulty-hard {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .stats-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+{% include "navbar_style.html" %}
+{% endblock style %}
+
+{% block body %}
+{% include "navbar.html" %}
+
+<div class="container">
+        <div class="hero-section text-center">
+            <div class="container">
+                <h1 class="display-4 fw-bold mb-4">🧠 Test Your Knowledge {{user.username}}! </h1>
+                <p class="lead mb-4">Challenge yourself with our comprehensive quiz platform featuring multiple categories and difficulty levels</p>
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="stats-number pulse-animation">10</div>
+                        <h3>Questions Per Quiz</h3>
+                        <p class="mb-0">Each quiz contains exactly 10 carefully crafted questions to test your knowledge</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="container mt-5">
+        <div class="row g-4">
+            <!-- Categories Card -->
+            <div class="col-lg-6">
+                <div class="feature-card">
+                    <div class="feature-icon bg-primary text-white mx-auto">
+                        <i class="bi bi-grid-3x3-gap"></i>
+                    </div>
+                    <h3 class="text-center mb-4">📚 Quiz Categories</h3>
+                    <p class="text-center text-muted mb-4">Choose from our diverse range of knowledge areas</p>
+                    
+                    <div class="text-center">
+                        <span class="category-badge bg-info text-white">
+                            <i class="bi bi-clock-history me-2"></i>History
+                        </span>
+                        <span class="category-badge bg-success text-white">
+                            <i class="bi bi-flask me-2"></i>Science
+                        </span>
+                        <span class="category-badge bg-warning text-dark">
+                            <i class="bi bi-globe me-2"></i>Geography
+                        </span>
+                        <span class="category-badge bg-danger text-white">
+                            <i class="bi bi-trophy me-2"></i>Sports
+                        </span>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <small class="text-muted">More categories coming soon!</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Difficulty Levels Card -->
+            <div class="col-lg-6">
+                <div class="feature-card">
+                    <div class="feature-icon bg-warning text-white mx-auto">
+                        <i class="bi bi-speedometer2"></i>
+                    </div>
+                    <h3 class="text-center mb-4">⚡ Difficulty Levels</h3>
+                    <p class="text-center text-muted mb-4">Select the challenge level that suits you best</p>
+                    
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="difficulty-level difficulty-easy">
+                                <i class="bi bi-emoji-smile me-2"></i>
+                                <strong>Easy</strong> - Perfect for beginners
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="difficulty-level difficulty-medium">
+                                <i class="bi bi-emoji-neutral me-2"></i>
+                                <strong>Medium</strong> - For intermediate learners
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="difficulty-level difficulty-hard">
+                                <i class="bi bi-emoji-frown me-2"></i>
+                                <strong>Hard</strong> - Challenge for experts
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works Section -->
+    <div class="container mt-5 mb-5">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-center mb-5">🚀 How It Works</h2>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="feature-icon bg-primary text-white mx-auto mb-3">
+                        <span class="fw-bold">1</span>
+                    </div>
+                    <h5>Choose Your Category</h5>
+                    <p class="text-muted">Select from History, Science, Geography, or Sports</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="feature-icon bg-success text-white mx-auto mb-3">
+                        <span class="fw-bold">2</span>
+                    </div>
+                    <h5>Pick Difficulty Level</h5>
+                    <p class="text-muted">Choose Easy, Medium, or Hard based on your confidence</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="feature-icon bg-warning text-white mx-auto mb-3">
+                        <span class="fw-bold">3</span>
+                    </div>
+                    <h5>Answer 10 Questions</h5>
+                    <p class="text-muted">Test your knowledge and track your progress</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="container mb-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="bg-light rounded-3 p-5 text-center">
+                    <h3 class="mb-3">Ready to Challenge Yourself? 🎯</h3>
+                    <p class="text-muted mb-4">Start your quiz journey today and discover how much you really know!</p>
+                    <a class="btn btn-primary btn-lg me-3" href="{% url 'category' %}">
+                        <i class="bi bi-play-circle me-2"></i>Start Quiz Now
+                    </a>
+                    <a class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-bar-chart me-2"></i>View Leaderboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include "footer.html" %}
+{% endblock body %}

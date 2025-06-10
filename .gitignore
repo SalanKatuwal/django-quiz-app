@@ -1,0 +1,7 @@
+.env
+
+test/
+
+db.sqlite3
+
+quiz_data.json

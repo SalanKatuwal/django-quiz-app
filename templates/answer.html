@@ -1,0 +1,185 @@
+{% extends "base.html" %} 
+
+{% block title %} 
+Answer Page
+{% endblock title %}
+
+{% block style %}
+        body {
+            background-color: #D2B48C;
+            padding: 20px 0;
+            min-height: 100vh;
+        }
+        
+        .quiz-container {
+            margin-top: 0;
+            padding-top: 20px;
+        }
+        
+        .quiz-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            border: none;
+            margin-bottom: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .quiz-header {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border-radius: 12px 12px 0 0;
+            padding: 15px 20px;
+            text-align: center;
+        }
+        
+        .question-number {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .quiz-question {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.3;
+        }
+        
+        .quiz-body {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .options-container {
+            flex-grow: 1;
+        }
+        
+        .option-item {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option-item:hover {
+            border-color: #6366f1;
+            background-color: #f8faff;
+        }
+        
+        .option-item input[type="radio"] {
+            margin-right: 8px;
+            margin-top: 0;
+        }
+        
+        .option-item label {
+            margin: 0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .option-item input[type="radio"]:checked + label {
+            color: #6366f1;
+            font-weight: 600;
+        }
+        
+        .option-item:has(input[type="radio"]:checked) {
+            border-color: #6366f1;
+            background-color: #f8faff;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            color: white;
+            width: 100%;
+            transition: transform 0.2s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            background: linear-gradient(135deg, #5855eb 0%, #7c3aed 100%);
+        }
+        
+        .submit-btn:focus {
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .quiz-card {
+                margin-bottom: 15px;
+            }
+            
+            .quiz-header {
+                padding: 12px 15px;
+            }
+            
+            .quiz-body {
+                padding: 15px;
+            }
+        }
+{% endblock style %}
+
+{% block body_class %} 
+d-flex justify-content-center align-items-center" style="min-height: 100vh; 
+{% if category == 'History' %}
+background-image: url(/static/img/history.jpg); background-size: cover;
+{% elif category == 'Geography' %}
+background-image: url(/static/img/geography.webp); background-size: cover;
+{% elif category == 'Science' %}
+background-image: url(/static/img/science.jpg); background-size: cover;
+{% else %}
+background-image: url(/static/img/sports.jpg); background-size: cover;
+{% endif %}
+
+{% endblock body_class %} 
+
+
+{% block body %}
+<div class="container-fluid quiz-container">
+    <div class="row g-3">
+        {% for quiz,user_answer in quiz_and_answers %}
+            <div class="col-lg-4 col-md-6 col-12">
+                <div class="card quiz-card">
+                    <div class="quiz-header">
+                        {% with i=forloop.counter %}
+                        <div class="question-number">Question {{ forloop.counter }} of {{ request.session.total_pages }} {{category}} and difficulty level {{difficulty}} </div>
+                        <h6 class="quiz-question"> {{quiz.question}} </h6>
+                    </div>
+                        <div class="quiz-body">
+                            <button class="btn d-flex justify-content-between {% if quiz.answer == quiz.option1 %} btn-success {% else %} btn-danger {% endif %} mb-2">{{quiz.option1}} {% if user_answer == quiz.option1 and quiz.answer == quiz.option1 %}  <span> ✅ Correct Answer </span> {% elif user_answer == quiz.option1 %} <span> <i class="fa-solid fa-xmark"></i> Wrong Answer </span> {% endif %} </button>
+                            <button class="btn d-flex justify-content-between {% if quiz.answer == quiz.option2 %} btn-success {% else %} btn-danger {% endif %} mb-2 ">{{quiz.option2}} {% if user_answer == quiz.option2 and quiz.answer == quiz.option2 %} <span> ✅ Correct Answer </span> {% elif user_answer == quiz.option2 %} <span> <i class="fa-solid fa-xmark"></i> Wrong Answer </span> {% endif %} </button>
+                            <button class="btn d-flex justify-content-between {% if quiz.answer == quiz.option3 %} btn-success {% else %} btn-danger {% endif %} mb-2 ">{{quiz.option3}} {% if user_answer == quiz.option3 and quiz.answer == quiz.option3 %} <span> ✅ Correct Answer </span> {% elif user_answer == quiz.option3 %} <span> <i class="fa-solid fa-xmark"></i> Wrong Answer </span> {% endif %} </button>
+                            <button class="btn d-flex justify-content-between {% if quiz.answer == quiz.option4 %} btn-success {% else %} btn-danger {% endif %} mb-2 w-100">{{quiz.option4}} {% if user_answer == quiz.option4 and quiz.answer == quiz.option4 %} <span> ✅ Correct Answer </span> {% elif user_answer == quiz.option4 %} <span> <i class="fa-solid fa-xmark"></i> Wrong Answer </span> {% endif %} </button>
+                        </div>
+        </div>
+    </div>
+        {% endwith %}
+        {% endfor %}
+        
+        <div class="text-center">
+        <a href="{% url 'remove_result' %}" class="btn btn-info btn-lg view-btn">
+            Play quiz again
+        </a>
+        &nbsp    
+        &nbsp    
+        <a href="{% url 'logout' %}" class="btn btn-danger btn-lg view-btn">
+            Logout
+        </a>
+        </div>
+    </div>
+</div>
+{% endblock body %}
