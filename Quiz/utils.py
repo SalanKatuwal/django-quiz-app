@@ -19,8 +19,6 @@ def send_otp_mail(email,username):
         'username':username,
         'otp': otp,
     }
-
-    
     html_content = render_to_string('email_template.html', context)
     text_content = f'Hello {username}, your OTP is {otp}. It expires in 10 minutes.'
 

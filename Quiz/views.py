@@ -192,8 +192,10 @@ def register(request):
         if not (re.search(r"\d", password1) and re.search(r"[A-Z]", password1) and re.search(r"[@!#$%&]", password1) and re.search(r"[a-z]", password1) and len(password1) > 6):
             messages.error(request,'Password does not meet the requirements! Please enter a Strong Password')
             return redirect('register')
-        send_otp_mail(email,username)
         request.session['temp_user'] = {'first_name': first_name, 'last_name': last_name, 'email': email, 'username': username, 'password1': password1}
+        if EmailOtp.objects.filter(email=email).exists():
+            return redirect('verify_otp')
+        send_otp_mail(email,username)
         return redirect('verify_otp')
     
     delete_email = request.session.pop('temp_user', None) 
@@ -257,6 +259,7 @@ def verify_otp(request):
                 orginal_email = EmailOtp.objects.get(email=email)
             except Exception as e:
                 messages.error(request,'Email already in use')
+                orginal_email.delete()
                 return redirect('register')
             if otp == orginal_email.otp:
                 if temp_user:
@@ -306,8 +309,11 @@ def resend(request):
         return redirect('register')
     email = temp_user.get('email') if temp_user else reset_user
     delete_e = EmailOtp.objects.filter(email=email).first()
-    if delete_e:
+    if delete_e.is_expired():
         delete_e.delete()
+    else:
+        messages.error(request,'OTP has not expired yet. Please wait for the current OTP to expire before requesting a new one.')
+        return redirect('verify_otp')
     send_otp_mail(email, temp_user['username'])
     messages.success(request,'OTP has been resent to your email! Please check your inbox.')
     return redirect('verify_otp')
@@ -320,6 +326,8 @@ def reset(request):
             messages.error(request,'Username or Email does not exist')
             return redirect('reset')
         request.session['reset_user'] = email
+        if EmailOtp.objects.filter(email=email).exists():
+            return redirect('verify_otp')
         send_reset_mail(email, username)
         return redirect('verify_otp')
     delete_reset = request.session.pop('reset_user', None)
