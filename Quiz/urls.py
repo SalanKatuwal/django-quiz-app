@@ -12,5 +12,9 @@ urlpatterns=[
     path('remove_result',views.remove_result,name='remove_result'),
     path('quiz_home',views.quiz_home,name="quiz_home"),
     path('answer',views.answer,name="answer"),
-    path('record',views.record,name='record')
+    path('record',views.record,name='record'),
+    path('verify_otp', views.verify_otp, name='verify_otp'),
+    path('resend',views.resend, name='resend'),
+    path('reset', views.reset, name='reset'),
+    path('reset_password', views.reset_password, name='reset_password'),
 ]

@@ -1,0 +1,50 @@
+<!-- templates/email_template.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>OTP Verification</title>
+  </head>
+  <body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
+    <table width="100%" bgcolor="#f4f4f4" cellpadding="0" cellspacing="0">
+      <tr>
+        <td>
+          <table align="center" width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; margin: 20px auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); overflow: hidden;">
+            <tr>
+              <td bgcolor="#4a90e2" style="padding: 20px; text-align: center;">
+                <h1 style="color: #ffffff; margin: 0;">Welcome to Quiz App</h1>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 30px; text-align: center;">
+                <h2 style="color: #333333;">Hello {{ username }} 👋</h2>
+                {% if is_reset %}
+                <p style="font-size: 16px; color: #555555;">
+                  You have requested to reset your password. Your one-time password (OTP) is:
+                {% else %}
+                <p style="font-size: 16px; color: #555555;">
+                  Thank you for registering. Your one-time password (OTP) is:
+                </p>
+                {% endif %}
+                <p style="font-size: 28px; color: #4a90e2; font-weight: bold; margin: 20px 0;">{{ otp }}</p>
+                <p style="font-size: 14px; color: #999999;">This OTP will expire in 10 minutes.</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 20px; text-align: center; background-color: #f9f9f9;">
+                <p style="font-size: 13px; color: #999999;">
+                  If you didn’t request this, you can safely ignore this email.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align: center; padding: 10px; background-color: #eeeeee; font-size: 12px; color: #888888;">
+                &copy; Quiz App,Salan Katuwal. All rights reserved.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Quiz,CustomUser,score
+from .models import Quiz,CustomUser,score,EmailOtp
 from django.contrib.auth.admin import UserAdmin
 
 class CustomUserAdmin(UserAdmin):
@@ -20,3 +20,8 @@ class ScoreAdmin(admin.ModelAdmin):
     list_filter = ('category', 'difficulty')
     search_fields = ('user__username',)
 admin.site.register(score, ScoreAdmin)
+
+class EmailOtpAdmin(admin.ModelAdmin):
+    list_display = ('email', 'otp', 'created_at')
+    search_fields = ('email',)
+admin.site.register(EmailOtp, EmailOtpAdmin)

@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}
+    OTP Verification
+{% endblock title %}
+
+{% block style %}
+     body {
+            background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .otp-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 40px 30px;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .otp-card::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(67, 206, 162, 0.3);
+            z-index: 0;
+        }
+
+        .otp-card::after {
+            content: "";
+            position: absolute;
+            bottom: -50px;
+            left: -50px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(24, 90, 157, 0.3);
+            z-index: 0;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .otp-title {
+            color: #185a9d;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .otp-subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .otp-inputs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 60px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 24px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .otp-input:focus {
+            border-color: #43cea2;
+            box-shadow: 0 0 0 3px rgba(67, 206, 162, 0.25);
+            outline: none;
+        }
+
+        .verify-btn {
+            background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .verify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(24, 90, 157, 0.3);
+        }
+
+        .action-links {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .resend-link, .register-link {
+            color: #185a9d;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .resend-link:hover, .register-link:hover {
+            color: #43cea2;
+        }
+
+       
+
+        @media (max-width: 576px) {
+            .otp-inputs {
+                gap: 5px;
+            }
+            
+            .otp-input {
+                width: 40px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+{% endblock style %}
+
+
+{% block body %}
+        <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="otp-card">
+                    <div class="card-content">
+                        <h2 class="otp-title text-center">Verification Code</h2>
+                        <p class="otp-subtitle text-center">We've sent a verification code to your email address</p>
+
+                    {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == 'error' %} alert-danger {% else %} alert-{{ message.tags }} {% endif %} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                    {% endif %}
+                        
+                        <form id="otpForm" method="post">
+                            {% csrf_token %}
+                            <div class="otp-inputs">
+                                <input type="text" class="otp-input" maxlength="1" autofocus onkeyup="moveToNext(this, 1)" name="otp1">
+                                <input type="text" class="otp-input" maxlength="1" onkeyup="moveToNext(this, 2)" name="otp2">
+                                <input type="text" class="otp-input" maxlength="1" onkeyup="moveToNext(this, 3)" name="otp3">
+                                <input type="text" class="otp-input" maxlength="1" onkeyup="moveToNext(this, 4)" name="otp4">
+                                <input type="text" class="otp-input" maxlength="1" onkeyup="moveToNext(this, 5)" name="otp5">
+                                <input type="text" class="otp-input" maxlength="1" onkeyup="moveToNext(this, 6)" name="otp6">
+                            </div>
+                            
+                            <input type="submit" class="verify-btn" value="Verify OTP" id="verifyBtn">
+                            
+                            <div class="action-links">
+                                <a href="{% url 'resend' %}" class="resend-link" id="resendBtn">Resend OTP</a>
+                                <a href="{% url 'register' %}" class="register-link">Register Again</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+       
+        
+{% endblock body %}
+
+
+    

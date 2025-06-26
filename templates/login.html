@@ -4,69 +4,475 @@
 Login Page    
 {% endblock title %}
 
+{% block style %}
+    * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated Background Elements */
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .shape1 {
+            background: #fff;
+            width: 120px;
+            height: 120px;
+            top: 15%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape2 {
+            background: #fff;
+            width: 80px;
+            height: 80px;
+            top: 25%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .shape3 {
+            background: #fff;
+            width: 150px;
+            height: 150px;
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 4s;
+        }
+
+        .shape4 {
+            background: #fff;
+            width: 60px;
+            height: 60px;
+            bottom: 30%;
+            right: 20%;
+            animation-delay: 1s;
+        }
+
+        .shape5 {
+            background: #fff;
+            width: 100px;
+            height: 100px;
+            top: 60%;
+            left: 50%;
+            animation-delay: 3s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-30px) rotate(180deg);
+            }
+        }
+
+        /* Particle effect */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: particles 10s linear infinite;
+        }
+
+        @keyframes particles {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Main container for perfect centering */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(15px);
+            padding: 45px 40px;
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .login-card::before {
+            content: "";
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .login-card::after {
+            content: "";
+            position: absolute;
+            bottom: -40px;
+            left: -40px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .login-title {
+            color: #333;
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-subtitle {
+            color: #666;
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-label {
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            padding: 15px 50px 15px 18px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            width: 100%;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            outline: none;
+            background: #fff;
+            transform: translateY(-2px);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 1.2rem;
+        }
+
+        .password-toggle {
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #667eea;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 30px;
+        }
+
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 16px;
+            border-radius: 12px;
+            width: 100%;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .login-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .register-link {
+            text-align: center;
+            padding-top: 25px;
+            border-top: 1px solid #e1e5e9;
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .register-link a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        /* Loading state */
+        .login-btn.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 576px) {
+            .main-container {
+                padding: 15px;
+            }
+            
+            .login-card {
+                padding: 35px 30px;
+            }
+            
+            .login-title {
+                font-size: 1.9rem;
+            }
+
+            .form-control {
+                padding: 14px 45px 14px 16px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .login-card {
+                padding: 30px 25px;
+            }
+        }
+{% endblock style %}
+
 {% block body_class %} 
 bg-info
 {% endblock body_class %} 
 
 {% block body %}
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-5">
-                <div class="card shadow">
-                    <div class="card-header bg-secondary text-white">
-                        <h3 class="mb-0">Login</h3>
-                    </div>
+       <div class="bg-animation">
+        <div class="floating-shapes shape1"></div>
+        <div class="floating-shapes shape2"></div>
+        <div class="floating-shapes shape3"></div>
+        <div class="floating-shapes shape4"></div>
+        <div class="floating-shapes shape5"></div>
+        
+        <div class="particles" id="particles"></div>
+    </div>
 
-                    {% if messages %}
+    <!-- Main Container for Perfect Centering -->
+    <div class="main-container">
+        <div class="login-card">
+            <div class="card-content">
+                <div class="login-header">
+                    <h1 class="login-title">Login</h1>
+                    <p class="login-subtitle">Please sign in to your account</p>
+                </div>
+
+                                    {% if messages %}
                     {% for message in messages %}
-                        <div class="alert {% if message.tags == 'error' %} alert-danger {% else %} alert-{{ message.tags }} {% endif %} alert-dismissible fade show mt-2" role="alert">
+                        <div class="alert {% if message.tags == 'error' %} alert-danger {% else %} alert-{{ message.tags }} {% endif %} alert-dismissible fade show" role="alert">
                             {{ message }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% endfor %}
                     {% endif %}
 
-                    <div class="card-body p-4">
-                        <form method="POST">
-                            {% csrf_token %}
-                            <!-- Username -->
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Username</label>
-                                <input type="text" class="form-control" name="username" id="username" name="username" placeholder="Enter your username">
-                            </div>
-
-                            <!-- Password -->
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" name="password" id="password" name="password" placeholder="Enter your password">
-                            </div>
-
-                            <!-- Remember Me & Forgot Password -->
-                            <div class="d-flex justify-content-between mb-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="rememberMe" name="remember">
-                                    <label class="form-check-label" for="rememberMe">
-                                        Remember me
-                                    </label>
-                                </div>
-                                <div>
-                                    <a href="#" class="text-decoration-none">Forgot password?</a>
-                                </div>
-                            </div>
-
-                            <!-- Submit Button -->
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-secondary btn-lg">Login</button>
-                            </div>
-                        </form>
-
-                        <!-- Register Link -->
-                        <div class="text-center mt-4">
-                            <p>Don't have an account? <a href="{% url 'register' %}" class="text-decoration-none">Register here</a></p>
+                <form id="loginForm" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="username" class="form-label">Username</label>
+                        <div class="position-relative">
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required>
+                            <i class="bi bi-person input-icon"></i>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="position-relative">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                            <i class="bi bi-eye-slash input-icon password-toggle" id="togglePassword"></i>
+                        </div>
+                    </div>
+
+                    <div class="forgot-password">
+                        <a href="{% url 'reset' %}">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="login-btn" id="loginButton">
+                        <span id="buttonText">Sign In</span>
+                    </button>
+                </form>
+
+                <div class="register-link">
+                    Don't have an account? <a href="{% url 'register' %}" onclick="goToRegister()">Register here</a>
                 </div>
             </div>
         </div>
     </div>
+
+     <script>
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 40;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (Math.random() * 5 + 8) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+                // Password toggle functionality
+        function setupPasswordToggle(toggleId, passwordId) {
+            document.getElementById(toggleId).addEventListener('click', function() {
+                const password = document.getElementById(passwordId);
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                
+                this.classList.toggle('bi-eye');
+                this.classList.toggle('bi-eye-slash');
+            });
+        }
+
+        setupPasswordToggle('togglePassword', 'password');
+        setupPasswordToggle('toggleConfirmPassword', 'confirmPassword');
+
+        // Initialize particles when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+        });
+
+    </script>
 {% endblock body %}

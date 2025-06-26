@@ -6,7 +6,8 @@ from django.contrib.auth.decorators import login_required
 from .models import Quiz,EmailOtp,score
 from django.core.paginator import Paginator
 import random
-from .utils import send_otp_mail
+import re
+from .utils import send_otp_mail, send_reset_mail
 # Create your views here.
 User = get_user_model()
 
@@ -149,18 +150,26 @@ def login(request):
     request.session.pop('all_answers', None)
     request.session.pop('category', None)
     request.session.pop('difficulty', None)
-    if request.user.is_authenticated:
-        return redirect('quiz_home')
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = auth.authenticate(username = username,password = password)
         if user is not None:
+            if user.is_staff:
+                auth.login(request,user)
+                return redirect('quiz_home')
+            if not user.is_verified:
+                messages.error(request,'Please verify your email first')
+                return redirect('login')
             auth.login(request,user)
             return redirect('quiz_home')
-        else:
+        else:  
             messages.error(request,'Invalid credentials')
             return redirect('login')
+    delete_email = request.session.pop('temp_user', None)
+    if delete_email:
+        messages.info(request, "Previous registration attempt expired. Please register again.")
+        EmailOtp.objects.filter(email=delete_email['email']).delete()
     return render(request,'login.html')
 
 def register(request):
@@ -180,11 +189,17 @@ def register(request):
         if password1 != password2:
             messages.error(request,'Password does not match')
             return redirect('register')
-        request.session['temp_user']={'email':email}
-        send_otp_mail(email)
-        User.objects.create_user(first_name=first_name,last_name=last_name,email=email,username=username,password=password1)
-        messages.success(request,'User created successfully')
-        return redirect('login')
+        if not (re.search(r"\d", password1) and re.search(r"[A-Z]", password1) and re.search(r"[@!#$%&]", password1) and re.search(r"[a-z]", password1) and len(password1) > 6):
+            messages.error(request,'Password does not meet the requirements! Please enter a Strong Password')
+            return redirect('register')
+        send_otp_mail(email,username)
+        request.session['temp_user'] = {'first_name': first_name, 'last_name': last_name, 'email': email, 'username': username, 'password1': password1}
+        return redirect('verify_otp')
+    
+    delete_email = request.session.pop('temp_user', None) 
+    if delete_email:
+        messages.info(request, "Previous registration attempt expired. Please register again.")
+        EmailOtp.objects.filter(email=delete_email['email']).delete()
     return render(request,'register.html')
     
 def remove_result(request):
@@ -218,3 +233,121 @@ def record(request):
     user_scores = score.objects.filter(user=request.user)
     total_score = user_scores[0].score
     return render(request,'record.html',{'score':total_score})
+
+def verify_otp(request):
+    temp_user = request.session.get('temp_user')
+    reset_user = request.session.get('reset_user')
+    if temp_user is None and reset_user is None:
+        messages.error(request,'Please register first')
+        return redirect('register')  
+    email = temp_user.get('email') if temp_user else reset_user
+    if not EmailOtp.objects.filter(email=email).exists():
+        messages.error(request,'Please register first')
+        return redirect('register')
+    if request.method == "POST":
+        otp1 = request.POST.get('otp1')
+        otp2 = request.POST.get('otp2')
+        otp3 = request.POST.get('otp3')
+        otp4 = request.POST.get('otp4')
+        otp5 = request.POST.get('otp5')
+        otp6 = request.POST.get('otp6')
+        if otp1 and otp2 and otp3 and otp4 and otp5 and otp6:
+            otp = otp1 + otp2 + otp3 + otp4 + otp5 + otp6
+            try:
+                orginal_email = EmailOtp.objects.get(email=email)
+            except Exception as e:
+                messages.error(request,'Email already in use')
+                return redirect('register')
+            if otp == orginal_email.otp:
+                if temp_user:
+                    if orginal_email.is_expired():
+                        messages.error(request,'OTP has expired. Please register again.')
+                        orginal_email.delete()
+                        request.session.pop('temp_user', None)
+                        return redirect('register')
+                    messages.success(request,'OTP verified successfully, Now login to continue')
+                    user_1 = User.objects.create_user(
+                        first_name=temp_user['first_name'],
+                        last_name=temp_user['last_name'],
+                        email=email,
+                        username=temp_user['username'],
+                        password=temp_user['password1']
+                    )
+                    user_1.is_verified = True
+                    user_1.save()
+                    orginal_email.delete()
+                    request.session.pop('temp_user', None)
+                    return redirect('login')
+                elif reset_user:
+                    if orginal_email.is_expired():
+                        messages.error(request,'OTP has expired. Please reset again.')
+                        orginal_email.delete()
+                        request.session.pop('reset_user', None)
+                        return redirect('reset')
+                    messages.success(request,'OTP verified successfully, Now reset your password')
+                    orginal_email.delete()
+                    return redirect('reset_password')
+                else:
+                    messages.error(request,'Invalid request. Please try again.')
+                    return redirect('register')
+            else:
+                messages.error(request,'Invalid OTP. Please try again.')
+                return redirect('verify_otp')
+        else:
+            messages.error(request,'Please enter all the digits of OTP')
+            return redirect('verify_otp')
+    return render(request, 'otp.html')
+
+def resend(request):
+    temp_user = request.session.get('temp_user')
+    reset_user = request.session.get('reset_user')
+    if temp_user is None and reset_user is None:
+        messages.error(request,'Please register first')
+        return redirect('register')
+    email = temp_user.get('email') if temp_user else reset_user
+    delete_e = EmailOtp.objects.filter(email=email).first()
+    if delete_e:
+        delete_e.delete()
+    send_otp_mail(email, temp_user['username'])
+    messages.success(request,'OTP has been resent to your email! Please check your inbox.')
+    return redirect('verify_otp')
+
+def reset(request):
+    if request.method == "POST":
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        if not User.objects.filter(username=username, email=email).exists():
+            messages.error(request,'Username or Email does not exist')
+            return redirect('reset')
+        request.session['reset_user'] = email
+        send_reset_mail(email, username)
+        return redirect('verify_otp')
+    delete_reset = request.session.pop('reset_user', None)
+    if delete_reset:
+        messages.info(request, "Previous password reset session expired. Please try again.")
+        EmailOtp.objects.filter(email=delete_reset).delete()
+    return render(request, 'reset.html')
+
+def reset_password(request):
+    email = request.session.get('reset_user')
+    if email is None:
+        messages.error(request,'Please verify your email first')
+        return redirect('reset')
+    if request.method == "POST":
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+        if password1 != password2:
+            messages.error(request,'Passwords do not match')
+            return redirect('reset_password')
+        if not (re.search(r"\d", password1) and re.search(r"[A-Z]", password1) and re.search(r"[@!#$%&]", password1) and re.search(r"[a-z]", password1) and len(password1) > 6):
+            messages.error(request,'Password does not meet the requirements! Please enter a Strong Password')
+            return redirect('reset_password')
+        user = User.objects.filter(email=email).first()
+        if user:
+            user.set_password(password1)
+            user.save()
+            request.session.pop('reset_user', None)
+            EmailOtp.objects.filter(email=email).delete()
+            messages.success(request,'Password reset successfully! Now login to continue')
+            return redirect('login')
+    return render(request, 'reset_password.html')
