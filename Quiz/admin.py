@@ -16,8 +16,8 @@ class QuizAdmin(admin.ModelAdmin):
 admin.site.register(Quiz,QuizAdmin)
 
 class ScoreAdmin(admin.ModelAdmin):
-    list_display = ('user', 'category', 'difficulty', 'score')
-    list_filter = ('category', 'difficulty')
+    list_display = ('user', 'category', 'difficulty', 'score', 'percentage','time_taken')
+    list_filter = ('category', 'difficulty','user')
     search_fields = ('user__username',)
 admin.site.register(score, ScoreAdmin)
 

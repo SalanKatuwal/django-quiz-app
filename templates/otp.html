@@ -174,7 +174,11 @@
                             
                             <div class="action-links">
                                 <a href="{% url 'resend' %}" class="resend-link" id="resendBtn">Resend OTP</a>
+                                {% if request.session.temp_user %}
                                 <a href="{% url 'register' %}" class="register-link">Register Again</a>
+                                {% else %}
+                                <a href="{% url 'login' %}" class="register-link">Rember Password? Go back</a>
+                                {% endif %}
                             </div>
                         </form>
                     </div>

@@ -25,7 +25,9 @@ class score(models.Model):
     user = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
     category = models.CharField(max_length=100)
     difficulty = models.CharField(max_length=100)
+    percentage = models.FloatField()
     score = models.IntegerField()
+    time_taken = models.DurationField()
     
 class CustomUser(AbstractUser):
     is_verified = models.BooleanField(default=False)

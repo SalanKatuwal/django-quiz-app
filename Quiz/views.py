@@ -8,6 +8,8 @@ from django.core.paginator import Paginator
 import random
 import re
 from .utils import send_otp_mail, send_reset_mail
+from django.utils import timezone
+from datetime import timedelta
 # Create your views here.
 User = get_user_model()
 
@@ -19,6 +21,8 @@ def result(request):
     category = request.session.get('category')
     difficulty = request.session.get('difficulty')
     session_score = request.session.get('score')
+    time_taken = request.session.get('time_taken',0)
+    duration = timedelta(seconds=int(time_taken))
     if page_number is None:
         messages.error(request,'First play the quiz to see the result')
         return redirect('category')
@@ -30,7 +34,8 @@ def result(request):
             user_score.score = session_score
             user_score.save()
     else:
-        score.objects.create(user=request.user, category=category, difficulty=difficulty, score=session_score)
+        percentage = (session_score / 10) * 100
+        score.objects.create(user=request.user, category=category, difficulty=difficulty, score=session_score, percentage=percentage,time_taken=duration)
     return render(request,'result.html')
 
 @login_required(login_url='login')
@@ -46,6 +51,7 @@ def category(request):
     request.session.pop('answer', None)
     request.session.pop('selected_option', None)
     request.session['score']=0
+    request.session['time_taken'] = 0
     request.session['all_answers'] = []
     if request.method == "POST":
         category = request.POST.get('category')
@@ -90,6 +96,9 @@ def home(request):
     request.session['total_pages'] = paginator.num_pages
     request.session['category'] = quiz.category
     request.session['difficulty'] = quiz.difficulty
+    request.session.pop('start_time', None)
+    if request.session.get('answer') is None:
+        request.session['start_time'] = timezone.now().timestamp()
     context={
         'quizgame':quizes,
         'current_page': int(page_number),
@@ -109,10 +118,11 @@ def quit(request):
     request.session.pop('answer', None)
     request.session.pop('selected_option', None)
     request.session.pop('score', None)
+    request.session.pop('time_taken', None)
     request.session.pop('random_quiz', None)
     request.session.pop('total_pages', None)
     request.session.pop('all_answers', None)
-    messages.success(request,'You have successfully quit the quiz')
+    messages.info(request,'You have successfully quit the quiz')
     return redirect('category')
 
 def checkans(request,id):
@@ -127,6 +137,18 @@ def checkans(request,id):
             return redirect('home')
         else:
             request.session['page_number'] = int(request.GET.get('page')) 
+        start_time = request.session.get('start_time')
+        current_time = timezone.now().timestamp()
+        if (current_time - start_time) > 60:
+            request.session['time_taken'] += 60
+            request.session['page_number'] = int(request.GET.get('page'))+1
+            request.session.pop('selected_option', None)
+            request.session.pop('start_time', None)
+            if request.session['page_number'] > request.session['total_pages']:
+                return redirect('result')
+            return redirect('home')
+        else:
+            request.session['time_taken'] += (current_time - start_time)
         request.session['all_answers'] += [selected_option]  
         question1 = get_object_or_404(Quiz, id=id)
         if question1.answer == selected_option:
@@ -170,6 +192,10 @@ def login(request):
     if delete_email:
         messages.info(request, "Previous registration attempt expired. Please register again.")
         EmailOtp.objects.filter(email=delete_email['email']).delete()
+    else:
+        delete_reset = request.session.pop('reset_user', None)
+        if delete_reset:
+            EmailOtp.objects.filter(email=delete_reset).delete()
     return render(request,'login.html')
 
 def register(request):
@@ -202,6 +228,11 @@ def register(request):
     if delete_email:
         messages.info(request, "Previous registration attempt expired. Please register again.")
         EmailOtp.objects.filter(email=delete_email['email']).delete()
+    else:
+        delete_reset = request.session.pop('reset_user', None)
+        if delete_reset:
+            messages.info(request, "Previous password reset session expired. Please try again.")
+            EmailOtp.objects.filter(email=delete_reset).delete()
     return render(request,'register.html')
     
 def remove_result(request):
@@ -231,10 +262,14 @@ def answer(request):
     }
     return render(request,'answer.html',context)
 
-def record(request):
-    user_scores = score.objects.filter(user=request.user)
-    total_score = user_scores[0].score
-    return render(request,'record.html',{'score':total_score})
+def format_duration(duration):
+    total_seconds = int(duration.total_seconds())
+    minutes = total_seconds // 60
+    seconds = total_seconds % 60
+    return f"{minutes}:{seconds:02d}"
+
+
+
 
 def verify_otp(request):
     temp_user = request.session.get('temp_user')
@@ -359,3 +394,118 @@ def reset_password(request):
             messages.success(request,'Password reset successfully! Now login to continue')
             return redirect('login')
     return render(request, 'reset_password.html')
+
+def filter(request):
+    if request.method == "POST":
+        submitted = request.POST.get('submitted')
+        if submitted == 'clear':
+            return redirect('record')
+        category = request.POST.get('category')
+        difficulty = request.POST.get('difficulty')
+        if not category and not difficulty:
+            messages.error(request, 'Please select at least one filter option')
+            return redirect('record')
+        request.session['category_1'] = category
+        request.session['difficulty_1'] = difficulty
+        request.session['filtered'] = True
+        return redirect('record')
+    
+def record(request):
+    filtered = request.session.get('filtered')
+    category = request.session.get('category_1') or None
+    difficulty = request.session.get('difficulty_1') or None
+    if filtered:
+        if not category and not difficulty:
+            messages.error(request, 'Please select at least one filter option')
+            return redirect('record')
+        if not category:
+            user_scores = score.objects.filter(user=request.user, difficulty=difficulty)
+        elif not difficulty:
+            user_scores = score.objects.filter(user=request.user, category=category)
+        else:
+            user_scores = score.objects.filter(user=request.user, category=category, difficulty=difficulty)
+        if not user_scores.exists():
+            messages.error(request, 'No records found for the selected filters')
+            return redirect('record')
+        request.session.pop('filtered', None)
+        request.session.pop('category_1', None)
+        request.session.pop('difficulty_1', None)
+    else:
+        user_scores = score.objects.filter(user=request.user)
+    for record in user_scores:
+        record.time_taken = format_duration(record.time_taken)
+    total_quiz = user_scores.count()
+    total_score = 0
+    for percentage in user_scores:
+        total_score = total_score + percentage.percentage
+    average_score = total_score / total_quiz if total_quiz > 0 else 0
+    total_passed = 0
+    for record in user_scores:
+        if record.percentage >= 50:
+            total_passed += 1
+    context ={
+        'scores': user_scores,
+        'total_quiz': total_quiz,
+        'average_score': average_score,
+        'total_passed': total_passed,
+        'category': category,
+        'difficulty': difficulty,
+    }
+    return render(request,'record.html',context)
+
+def profile(request):  
+    if request.method == "POST":
+        username = request.POST.get('username') 
+        if not username:
+            messages.error(request,'Username cannot be empty')
+            return redirect('profile')
+        if username != request.user.username:
+            if User.objects.filter(username=username).exists():
+                messages.error(request,'Username already taken')
+                return redirect('profile')
+            request.user.username = username
+            request.user.save()
+            messages.success(request,'Username updated successfully')
+        else:
+            messages.info(request,"Nothing to update")
+            return redirect('profile')
+    return render(request, 'profile.html', )
+
+def change_password(request):
+    if request.method == "POST":
+        current_password = request.POST.get('current')
+        new_password1 = request.POST.get('password1')
+        new_password2 = request.POST.get('password2')
+        if not current_password or not new_password1 or not new_password2:
+            messages.error(request,'All fields are required')
+            return redirect('change_password')
+        if new_password1 != new_password2:
+            messages.error(request,'New passwords do not match')
+            return redirect('change_password')
+        if not (re.search(r"\d", new_password1) and re.search(r"[A-Z]", new_password1) and re.search(r"[@!#$%&]", new_password1) and re.search(r"[a-z]", new_password1) and len(new_password1) > 6):
+            messages.error(request,'New password does not meet the requirements! Please enter a Strong Password')
+            return redirect('change_password')
+        if not request.user.check_password(current_password):
+            messages.error(request,'Current password is incorrect')
+            return redirect('change_password')
+        request.user.set_password(new_password1)
+        request.user.save()
+        messages.success(request,'Password changed successfully! Now login to continue')
+        return redirect('login')
+
+def delete_account(request):
+    if request.method == "POST":
+        value = request.POST.get('confirm')
+        confirmation = request.POST.get('confirmation')
+        if value == "cancel":
+            return redirect('profile')
+        if confirmation != "DELETE":
+            messages.info(request,'Please type DELETE to confirm account deletion')
+            return redirect('delete_account')
+        if confirmation == "DELETE":
+            user = request.user
+            user.delete()
+            messages.success(request,'Account deleted successfully')
+            return redirect('login')
+
+    return render(request, 'delete_account.html')

@@ -62,8 +62,26 @@
                         <i class="bi bi-check-circle-fill"></i>
                     </div> 
                     <h2 class="mb-4">Quiz Results</h2>
-                    {% if request.session.score == 8 %}
-                        <div class="alert alert-success">Excellent! Keep it up!</div>
+
+                    {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == 'error' %} alert-danger {% else %} alert-{{ message.tags }} {% endif %} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                    {% endif %}
+
+                    {% if request.session.score == 10 %}
+                    <div class="alert alert-success">🏆 Congrats! That's a perfect ten</div>
+                    {% elif request.session.score >= 8 %}
+                        <div class="alert alert-success">😎 Excellent! Keep it up!</div>
+                    {% elif request.session.score >= 6 %}
+                        <div class="alert alert-info">👍 Nice Try! You can do better.</div>
+                    {% elif request.session.score >= 4 %}
+                        <div class="alert alert-danger">📉 Not a good score.Try again.</div>
+                    {% else %}
+                        <div class="alert alert-danger">😢 Oops! You need to improve your knowledge </div>
                     {% endif %} 
                     <p class="score-text">
                         You got <span class="score-highlight">{{request.session.score}}</span> answers correct out of <span class="score-highlight">{{request.session.total_pages}}</span> questions

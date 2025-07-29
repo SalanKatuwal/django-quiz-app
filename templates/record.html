@@ -1,2 +1,310 @@
-score
-{{score}}
+{% extends "base.html" %}
+
+{% block title %}
+Quiz-Record
+{% endblock title %}
+
+{% block style %}
+body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        .dashboard-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        
+        .page-title {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stats-card h4 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .table thead th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+            padding: 1rem;
+        }
+        
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+        
+        .table tbody tr:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .category-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .category-history { background: linear-gradient(135deg, #ff9a9e, #fecfef); color: #8e44ad; }
+        .category-geography { background: linear-gradient(135deg, #a8edea, #fed6e3); color: #16a085; }
+        .category-science { background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #e67e22; }
+        .category-sports { background: linear-gradient(135deg, #d299c2, #fef9d7); color: #27ae60; }
+        
+        .difficulty-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: capitalize;
+        }
+        
+        .difficulty-easy { background-color: #d4edda; color: #155724; }
+        .difficulty-medium { background-color: #fff3cd; color: #856404; }
+        .difficulty-hard { background-color: #f8d7da; color: #721c24; }
+        
+        .score-badge {
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+        
+        .score-excellent { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; }
+        .score-good { background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; }
+        .score-average { background: linear-gradient(135deg, #fa709a, #fee140); color: white; }
+        .score-poor { background: linear-gradient(135deg, #ff758c, #ff7eb3); color: white; }
+        
+        .icon-category {
+            font-size: 1.2rem;
+            margin-right: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .table-responsive {
+                font-size: 0.9rem;
+            }
+        }
+               .filter-select {
+            border-radius: 10px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            padding: 0.75rem 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .filter-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .form-label {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        {% include "navbar_style.html" %}
+{% endblock style %}
+
+{% block body %}
+ {% include "navbar.html" %}
+ <div class="background-overlay"></div>
+
+    
+    <div class="container">
+        <div class="dashboard-container">
+            <h1 class="page-title">
+                <i class="fas fa-trophy"></i> Quiz Records Dashboard
+            </h1>
+            
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4 col-sm-6 mb-3">
+                    <div class="stats-card">
+                        <h4>{{total_quiz}}</h4>
+                        <p class="mb-0">Total Quizzes</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 mb-3">
+                    <div class="stats-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <h4>{{average_score | floatformat:2}}%</h4>
+                        <p class="mb-0">Average Score</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 mb-3">
+                    <div class="stats-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                        <h4>{{total_passed}}</h4>
+                        <p class="mb-0">Passed</p>
+                    </div>
+                </div>
+                {% comment %} <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="stats-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                        <h4>Science</h4>
+                        <p class="mb-0">Best Category</p>
+                    </div>
+                </div> {% endcomment %}
+            </div>
+              {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == 'error' %} alert-danger {% else %} alert-{{ message.tags }} {% endif %} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+            <form method="post" action="{% url 'filter' %}">
+            {% csrf_token %}
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <label for="categoryFilter" class="form-label fw-bold">
+                        <i class="fas fa-filter me-2"></i>Filter by Category
+                    </label>
+                    <select id="categoryFilter" name="category" class="form-select filter-select">
+                        <option value="">All Categories</option>
+                        <option value="History" {% if category == 'History' %} selected {% endif %}>History</option>
+                        <option value="Geography" {% if category == 'Geography' %} selected {% endif %}>Geography</option>
+                        <option value="Science" {% if category == 'Science' %} selected {% endif %}>Science</option>
+                        <option value="Sports" {% if category == 'Sports' %} selected {% endif %}>Sports</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="difficultyFilter" class="form-label fw-bold">
+                        <i class="fas fa-signal me-2"></i>Filter by Difficulty
+                    </label>
+                    <select id="difficultyFilter" name="difficulty" class="form-select filter-select">
+                        <option value="">All Difficulties</option>
+                        <option value="easy" {% if difficulty == 'easy' %} selected {% endif %}>Easy</option>
+                        <option value="medium" {% if difficulty == 'medium' %} selected {% endif %}>Medium</option>
+                        <option value="hard" {% if difficulty == 'hard' %} selected {% endif %}>Hard</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3 d-flex align-items-end gap-2">
+                    <button id="applyFilters" name="submitted" value="filter" class="btn btn-primary px-4 py-2" style="background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 10px; font-weight: 600;">
+                        <i class="fas fa-search me-2"></i>Apply Filters
+                    </button>
+                    <button id="clearFilters" name="submitted" value="clear" class="btn btn-outline-secondary px-3 py-2" style="border-radius: 10px; font-weight: 600;">
+                        <i class="fas fa-times me-1"></i>Clear
+                    </button>
+                </div>
+            </div>
+        </form>
+            
+            <!-- Quiz Records Table -->
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-calendar-alt me-2"></i>Date</th>
+                                <th><i class="fas fa-list me-2"></i>Category</th>
+                                <th><i class="fas fa-signal me-2"></i>Difficulty</th>
+                                <th><i class="fas fa-question-circle me-2"></i>Questions</th>
+                                <th><i class="fas fa-star me-2"></i>Score</th>
+                                <th><i class="fas fa-percentage me-2"></i>Percentage</th>
+                                <th><i class="fas fa-clock me-2"></i>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for score in scores %}
+                            <tr>
+                                <td>2024-01-15</td>
+                                <td>
+                                    <span class="category-badge category-{{score.category|lower}}">
+                                        <i class="fas {% if score.category == 'History' %} fa-landmark {% elif score.category == 'Geography' %} fa-globe {% elif score.category == 'Sports' %} fa-football-ball {% else %} fa-flask {% endif %} icon-category"></i>{{score.category}}
+                                    </span>
+                                </td>
+                                <td><span class="difficulty-badge difficulty-{{score.difficulty|lower}}">{{score.difficulty}}</span></td>
+                                <td>10</td>
+                                <td><span class="score-badge {% if score.percentage >= 90 %} score-excellent {% elif score.percentage >= 70 %} score-good {% elif score.percentage >= 50 %} score-average {% else %} score-poor {% endif %}">{{score.score}}/10</span></td>
+                                <td>{{score.percentage}}%</td>
+                                <td>{{score.time_taken}}</td>
+                            </tr>
+                            {% endfor %}
+                        
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include "footer.html" %}
+{% endblock body %}

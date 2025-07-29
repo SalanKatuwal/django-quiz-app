@@ -395,7 +395,7 @@ bg-info
                     <p class="login-subtitle">Please sign in to your account</p>
                 </div>
 
-                                    {% if messages %}
+                    {% if messages %}
                     {% for message in messages %}
                         <div class="alert {% if message.tags == 'error' %} alert-danger {% else %} alert-{{ message.tags }} {% endif %} alert-dismissible fade show" role="alert">
                             {{ message }}
@@ -432,7 +432,7 @@ bg-info
                 </form>
 
                 <div class="register-link">
-                    Don't have an account? <a href="{% url 'register' %}" onclick="goToRegister()">Register here</a>
+                    Don't have an account? <a href="{% url 'register' %}">Register here</a>
                 </div>
             </div>
         </div>

@@ -48,12 +48,27 @@ background-image: url(/static/img/sports.jpg); background-size: cover;
           🔴 Hard
           {% endif %}
           </h5>
-          <h5 class="card-subtitle mb-2 text-muted">Question No: {{current_page}}</h5>
+<div class="d-flex justify-content-between align-items-center flex-wrap">
+  <h5 class="card-subtitle mb-2 text-muted mb-0">
+    Question No: {{ current_page }}
+  </h5>
+  {% if request.session.answer is None %}
+  <h5 class="card-subtitle mb-2 text-muted mb-0">
+    Time Left: <span id="timer">60</span> seconds
+  </h5>
+  {% else %}
+    <h5 class="card-subtitle mb-2 text-muted mb-0">
+    Click Next to continue
+  </h5>
+  {% endif %}
+</div>
+
+          
 
         </div>
         <h5 class="card-title mb-0 text-center">{{ quiz.question }}</h5>
         <!-- Options Section -->
-        <form method="POST" action="{% url 'checkans' quiz.id %}?page={{ current_page }}">
+        <form method="POST" id="quiz-form" action="{% url 'checkans' quiz.id %}?page={{ current_page }}">
         {% csrf_token %}
         <div class="card-body">
           <div class="d-grid gap-2">
@@ -82,6 +97,22 @@ background-image: url(/static/img/sports.jpg); background-size: cover;
     {% endfor %} 
 
   </div>
+  <script>
+    let timeLeft = 60;
+    const timerEl = document.getElementById('timer');
+    const form = document.getElementById('quiz-form');
+
+    const countdown = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            alert("Time's up! Moving to next question.");
+            form.submit();  // auto-submit on timeout
+        }
+    }, 1000);
+</script>
+
 
 
 {% endblock body %}

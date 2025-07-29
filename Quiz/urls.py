@@ -17,4 +17,8 @@ urlpatterns=[
     path('resend',views.resend, name='resend'),
     path('reset', views.reset, name='reset'),
     path('reset_password', views.reset_password, name='reset_password'),
+    path('filter', views.filter, name='filter'),
+    path('profile', views.profile, name='profile'),
+    path('change_password', views.change_password, name='change_password'),
+    path('delete_account', views.delete_account, name='delete_account'),
 ]

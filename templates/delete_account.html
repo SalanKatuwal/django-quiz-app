@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+{% block title %}
+Delete Accounnt- Quiz App
+{% endblock title %}
+
+{% block style %}
+ body {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .modal-header-custom {
+            background: #e53e3e;
+            color: white;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title-custom {
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .modal-title-custom i {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .close-btn-custom {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .close-btn-custom:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-body-custom {
+            padding: 24px;
+        }
+
+        .warning-alert-custom {
+            background: #fed7d7;
+            border: 1px solid #feb2b2;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .warning-alert-custom i {
+            color: #c53030;
+            margin-right: 12px;
+            margin-top: 2px;
+            font-size: 16px;
+        }
+
+        .warning-text-custom {
+            color: #742a2a;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .info-section-custom {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .info-icon-custom {
+            color: #3182ce;
+            margin-right: 8px;
+            margin-top: 2px;
+            font-size: 16px;
+        }
+
+        .info-text-custom {
+            color: #4a5568;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .delete-text-custom {
+            color: #e53e3e;
+            font-weight: 600;
+        }
+
+        .form-floating-custom {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            background: white;
+        }
+
+        .form-control-custom:focus {
+            outline: none;
+            border-color: #e53e3e;
+            box-shadow: none;
+        }
+
+        .form-label-custom {
+            position: absolute;
+            left: 16px;
+            top: 12px;
+            color: #a0aec0;
+            font-size: 14px;
+            pointer-events: none;
+            transition: all 0.2s;
+            background: white;
+            padding: 0 4px;
+        }
+
+        .form-control-custom:focus + .form-label-custom,
+        .form-control-custom:not(:placeholder-shown) + .form-label-custom {
+            top: -8px;
+            left: 12px;
+            font-size: 12px;
+            color: #4a5568;
+        }
+
+        .help-text-custom {
+            display: flex;
+            align-items: center;
+            color: #718096;
+            font-size: 12px;
+            margin-bottom: 24px;
+        }
+
+        .help-text-custom i {
+            margin-right: 6px;
+            font-size: 12px;
+        }
+
+        .modal-footer-custom {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn-custom {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .btn-custom i {
+            margin-right: 6px;
+            font-size: 14px;
+        }
+
+        .btn-cancel-custom {
+            background: #718096;
+            color: white;
+        }
+
+        .btn-cancel-custom:hover {
+            background: #4a5568;
+            color: white;
+        }
+
+        .btn-delete-custom {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .btn-delete-custom:hover {
+            background: #c53030;
+            color: white;
+        }
+
+        .btn-delete-custom:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 480px) {
+            .modal-container {
+                margin: 10px;
+            }
+            
+            .modal-footer-custom {
+                flex-direction: column;
+            }
+            
+            .btn-custom {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+{% endblock style %}
+
+{% block body %}
+    <div class="modal-container">
+        <div class="modal-header-custom">
+            <h5 class="modal-title-custom">
+                <i class="fas fa-exclamation-triangle"></i>
+                Delete Account
+            </h5>
+            <button type="button" class="close-btn-custom">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="modal-body-custom">
+            <div class="warning-alert-custom">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p class="warning-text-custom">
+                    <strong>Warning!</strong> This action cannot be undone. All your quiz data, scores, and progress will be permanently deleted.
+                </p>
+            </div>
+
+                          {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == 'error' %} alert-danger {% else %} alert-{{ message.tags }} {% endif %} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            
+            <div class="info-section-custom">
+                <i class="fas fa-info-circle info-icon-custom"></i>
+                <p class="info-text-custom">
+                    To confirm account deletion, please type <span class="delete-text-custom">DELETE</span> in the field below:
+                </p>
+            </div>
+            <form method="post" action="{% url 'delete_account' %}">
+            {% csrf_token %}
+            <div class="form-floating-custom">
+                <input 
+                    type="text" name="confirmation"
+                    class="form-control-custom" 
+                    id="confirmationInput"
+                    placeholder=" "
+                    autocomplete="off"
+                >
+                <label class="form-label-custom" for="confirmationInput">
+                    <i class="fas fa-keyboard"></i> Confirmation Text
+                </label>
+            </div>
+            
+            <div class="help-text-custom">
+                <i class="fas fa-shield-alt"></i>
+                This confirmation helps prevent accidental account deletion.
+            </div>
+            
+            <div class="modal-footer-custom">
+                <button type="submit" class="btn-custom btn-cancel-custom" name="confirm" value="cancel">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
+                <button type="submit" class="btn-custom btn-delete-custom" name="confirm" value="delete">
+                    <i class="fas fa-trash-alt"></i>
+                    Delete Account
+                </button>
+            </div>
+        </form>
+        </div>
+    </div>
+{% endblock body %}
