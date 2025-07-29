@@ -1,5 +1,5 @@
 # 🧠 Django Quiz App
-A dynamic and interactive quiz web application built using Django. Users can test their knowledge across various categories and difficulty levels with a smooth, timed quiz interface. The app includes OTP-based email verification, session-managed quiz flow, and personalized game history tracking.
+A dynamic and interactive quiz web application built using Django. Users can test their knowledge across various categories and difficulty levels with a smooth, timed quiz interface. The app includes **OTP-based email verification**, secure **user authentication with login/logout**, session-managed quiz flow, and personalized game history tracking.
 
 ## Features
 - Category selection: History, Science, Sports, and Geography
@@ -19,6 +19,52 @@ A dynamic and interactive quiz web application built using Django. Users can tes
 - **Database:** SQLite
 - **Email:** Django email backend (for OTP verification)
 - **Session Management:** Django Sessions
+
+## Screenshots
+- **Login Page:**
+![Login](/photos/login.jpeg)
+
+- **Register:**
+![Login](/photos/Register.jpeg)
+
+- **Email Otp sent:**
+![Login](/photos/email.png)
+
+- **Otp verification:**
+![Login](/photos/otppage.jpeg)
+
+- **Home Page:**
+![Login](/photos/home.png)
+
+- **Choose a Category and Difficulty level:**
+![Login](/photos/Category.png)
+
+- **History Quiz:**
+![Login](/photos/History.png)
+
+- **Geography Quiz:**
+![Login](/photos/Geography.png)
+
+- **Sports Quiz:**
+![Login](/photos/Sports.png)
+
+- **Science Quiz:**
+![Login](/photos/Science.png)
+
+- **Result Page:**
+![Login](/photos/output.png)
+
+- **Check your answers:**
+![Login](/photos/Results.png)
+
+- **View your Record:**
+![Login](/photos/record.png)
+
+- **Verify email to change password:**
+![Login](/photos/Resetpass.jpeg)
+
+- **Change password:**
+![Login](/photos/changepass.jpeg)
 
 ## How It Works
 - User registers and verifies email via OTP.
